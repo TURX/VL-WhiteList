@@ -1,0 +1,18 @@
+main: xyz.cstu.vl.whitelist.App
+name: WhiteList
+version: 1.0
+description: A simple whitelist plugin
+api-version: 1.16
+load: STARTUP
+author: turx2003@gmail.com
+website: cstu.xyz
+commands:
+  wl:
+   description: Whitelist (plugin) management
+   permission: wl.manage
+   permission-message: You do not have permission!
+   usage: /<command> [enable | disable | reload | add | remove | list] (name)
+permissions:
+  wl.*:
+   description: All whitelist permission
+   default: op
