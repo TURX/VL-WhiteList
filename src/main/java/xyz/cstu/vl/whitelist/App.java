@@ -18,10 +18,11 @@ public class App extends JavaPlugin {
         saveDefaultConfig();
         enabled = config.getBoolean("enabled");
         whitelistOrig = config.getStringList("ids");
+        loadWhiteList();
         getLogger().info("[VL WhiteList] " + (enabled ? "Enabled" : "Started but not enabled"));
         if (enabled)
             getServer().getPluginManager().registerEvents(new Join(this), this);
-        this.getCommand("wl").setExecutor(new CommandProc(this));
+        getCommand("wl").setExecutor(new CommandProc(this));
     }
 
     @Override

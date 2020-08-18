@@ -1,5 +1,6 @@
 package xyz.cstu.vl.whitelist;
 
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 
 import java.util.ArrayList;
@@ -27,9 +28,6 @@ public class JoinTest {
         whitelist = new ArrayList<String>();
         whitelistOrig = new ArrayList<String>();
         whitelistOrig.add("aBcD123");
-        for (String i : whitelistOrig) {
-            whitelist.add(i.toUpperCase());
-        }
     }
 
     @Test
@@ -38,7 +36,10 @@ public class JoinTest {
 
         App app = PowerMockito.mock(App.class);
         app.enabled = true;
+        app.whitelistOrig = whitelistOrig;
         app.whitelist = whitelist;
+        PowerMockito.doCallRealMethod().when(app).loadWhiteList();
+        app.loadWhiteList();
         PowerMockito.when(app.getLogger()).thenReturn(logger);
 
         Player player = PowerMockito.mock(Player.class);
@@ -57,16 +58,15 @@ public class JoinTest {
     @Test
     public void invalidPlayerJoin() throws Exception {
         List<String> whitelist = new ArrayList<String>(), whitelistOrig = new ArrayList<String>();
-        whitelistOrig.add("aBcD123");
-        for (String i : whitelistOrig) {
-            whitelist.add(i.toUpperCase());
-        }
 
         PluginLogger logger = PowerMockito.mock(PluginLogger.class);
 
         App app = PowerMockito.mock(App.class);
         app.enabled = true;
+        app.whitelistOrig = whitelistOrig;
         app.whitelist = whitelist;
+        PowerMockito.doCallRealMethod().when(app).loadWhiteList();
+        app.loadWhiteList();
         PowerMockito.when(app.getLogger()).thenReturn(logger);
 
         Player player = PowerMockito.mock(Player.class);
@@ -80,5 +80,26 @@ public class JoinTest {
 
         Mockito.verify(player, times(1)).kickPlayer("You are not on the whitelist.\n您不在白名单上。\nお名前はホワイトリストにありません。");
         Mockito.verify(logger, times(1)).info("[VL WhiteList] bcd123 is not existed on whitelist");
+    }
+
+    @Test
+    public void notEnabledPlayerJoin() throws Exception {
+        PluginLogger logger = PowerMockito.mock(PluginLogger.class);
+
+        App app = PowerMockito.mock(App.class);
+        app.enabled = false;
+        PowerMockito.when(app.getLogger()).thenReturn(logger);
+
+        Player player = PowerMockito.mock(Player.class);
+        PowerMockito.when(player.getName()).thenReturn("bcd123");
+
+        PlayerJoinEvent playerJoinEvent = PowerMockito.mock(PlayerJoinEvent.class);
+        PowerMockito.when(playerJoinEvent.getPlayer()).thenReturn(player);
+
+        Join join = new Join(app);
+        join.onPlayerJoin(playerJoinEvent);
+
+        Mockito.verify(logger, times(0)).info(anyString());
+        Mockito.verify(player, times(0)).kickPlayer(anyString());
     }
 }
